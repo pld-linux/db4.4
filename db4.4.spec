@@ -210,6 +210,8 @@ Group:		Applications/Databases
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 Provides:	db-utils = %{version}-%{release}
 Obsoletes:	db4-utils
+# obsolete Ra package
+Obsoletes:	db3-utils
 
 %description utils
 The Berkeley Database (Berkeley DB) is a programmatic toolkit that

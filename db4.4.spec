@@ -10,7 +10,7 @@
 Summary:	Berkeley DB database library for C
 Summary(pl):	Biblioteka C do obs³ugi baz Berkeley DB
 Name:		db4.4
-Version:	4.4.16
+Version:	4.4.20
 Release:	1
 Epoch:		0
 License:	Sleepycat public license (GPL-like, see LICENSE)
@@ -18,7 +18,9 @@ Group:		Libraries
 # alternative site (sometimes working): http://www.berkeleydb.com/
 #Source0Download: http://dev.sleepycat.com/downloads/releasehistorybdb.html
 Source0:	http://downloads.sleepycat.com/db-%{version}.tar.gz
-# Source0-md5:	ec58179a39695cab6512eee0db0d71b9
+# Source0-md5:	d84dff288a19186b136b0daf7067ade3
+Patch0:		http://www.sleepycat.com/update/4.4.20/patch.4.4.20.1
+Patch1:		http://www.sleepycat.com/update/4.4.20/patch.4.4.20.2
 URL:		http://www.sleepycat.com/
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -237,6 +239,8 @@ poleceñ.
 
 %prep
 %setup -q -n db-%{version}
+%patch0 -p0
+%patch1 -p0
 
 %if %{without nptl}
 sed -i -e 's,AM_PTHREADS_SHARED("POSIX/.*,:,' dist/aclocal/mutex.ac

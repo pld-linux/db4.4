@@ -237,9 +237,9 @@ Group:		Applications/Databases
 Requires:	%{name} = %{epoch}:%{version}-%{release}
 %if %{with default_db}
 Provides:	db-utils = %{version}-%{release}
-Obsoletes:	db4-utils
-# obsolete Ra package
+Obsoletes:	db-utils
 Obsoletes:	db3-utils
+Obsoletes:	db4-utils
 %endif
 
 %description utils
@@ -296,7 +296,7 @@ CC="%{__cc}"
 CXX="%{__cxx}"
 CFLAGS="%{rpmcflags}"
 CXXFLAGS="%{rpmcflags} -fno-implicit-templates"
-LDFLAGS="%{rpmldflags}"
+LDFLAGS="%{rpmcflags} %{rpmldflags}"
 export CC CXX CFLAGS CXXFLAGS LDFLAGS
 
 ../dist/%configure \
@@ -365,7 +365,7 @@ mv -f libdb.a libdb-4.4.a
 mv -f libdb_cxx.a libdb_cxx-4.4.a
 %endif
 %if %{with java}
-mv -f $RPM_BUILD_ROOT%{_libdir}/*.jar $RPM_BUILD_ROOT%{_javadir}
+mv -f $RPM_BUILD_ROOT%{_libdir}/db.jar $RPM_BUILD_ROOT%{_javadir}/db-4.4.jar
 %endif
 %if %{with default_db}
 ln -sf /%{_lib}/libdb-4.4.so libdb.so
@@ -379,6 +379,7 @@ ln -sf libdb_cxx-4.4.so libdb_cxx.so
 ln -sf libdb_cxx-4.4.la libdb_cxx.la
 %if %{with java}
 ln -sf libdb_java-4.4.la libdb_java.la
+ln -sf db-4.4.jar $RPM_BUILD_ROOT%{_javadir}/db.jar
 %endif
 %if %{with tcl}
 ln -sf libdb_tcl-4.4.so libdb_tcl.so
@@ -395,6 +396,16 @@ ln -sf libdb_cxx-4.4.a libdb_cxx.a
 sed -i "s/old_library=''/old_library='libdb-4.4.a'/" libdb-4.4.la
 sed -i "s/old_library=''/old_library='libdb_cxx-4.4.a'/" libdb_cxx-4.4.la
 
+cd -
+
+cd $RPM_BUILD_ROOT%{_bindir}
+mv -f berkeley_db_svc berkeley_db_svc-4.4
+%{?with_default_db:ln -sf berkeley_db_svc-4.4 berkeley_db_svc}
+for F in db_*; do
+  Fver=$(echo $F|sed 's/db_/db4.4_/')
+  mv $F $Fver
+  %{?with_default_db:ln -sf $Fver $F}
+done
 cd -
 rm -f examples_c*/tags
 install -d $RPM_BUILD_ROOT%{_examplesdir}/db-%{version}
@@ -500,7 +511,10 @@ rm -rf $RPM_BUILD_ROOT
 %files java
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libdb_java-4.4.so
+%{_javadir}/db-4.4.jar
+%if %{with default_db}
 %{_javadir}/db.jar
+%endif
 
 %files java-devel
 %defattr(644,root,root,755)
@@ -533,17 +547,32 @@ rm -rf $RPM_BUILD_ROOT
 
 %files utils
 %defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/berkeley_db_svc-4.4
+%attr(755,root,root) %{_bindir}/db4.4_archive
+%attr(755,root,root) %{_bindir}/db4.4_checkpoint
+%attr(755,root,root) %{_bindir}/db4.4_deadlock
+%attr(755,root,root) %{_bindir}/db4.4_dump
+#%attr(755,root,root) %{_bindir}/db4.4_dump185
+%attr(755,root,root) %{_bindir}/db4.4_hotbackup
+%attr(755,root,root) %{_bindir}/db4.4_load
+%attr(755,root,root) %{_bindir}/db4.4_printlog
+%attr(755,root,root) %{_bindir}/db4.4_recover
+%attr(755,root,root) %{_bindir}/db4.4_stat
+%attr(755,root,root) %{_bindir}/db4.4_upgrade
+%attr(755,root,root) %{_bindir}/db4.4_verify
+%if %{with default_db}
 %attr(755,root,root) %{_bindir}/berkeley_db_svc
-%attr(755,root,root) %{_bindir}/db*_archive
-%attr(755,root,root) %{_bindir}/db*_checkpoint
-%attr(755,root,root) %{_bindir}/db*_deadlock
-%attr(755,root,root) %{_bindir}/db*_dump
-#%attr(755,root,root) %{_bindir}/db*_dump185
-%attr(755,root,root) %{_bindir}/db*_hotbackup
-%attr(755,root,root) %{_bindir}/db*_load
-%attr(755,root,root) %{_bindir}/db*_printlog
-%attr(755,root,root) %{_bindir}/db*_recover
-%attr(755,root,root) %{_bindir}/db*_stat
-%attr(755,root,root) %{_bindir}/db*_upgrade
-%attr(755,root,root) %{_bindir}/db*_verify
+%attr(755,root,root) %{_bindir}/db_archive
+%attr(755,root,root) %{_bindir}/db_checkpoint
+%attr(755,root,root) %{_bindir}/db_deadlock
+%attr(755,root,root) %{_bindir}/db_dump
+#%attr(755,root,root) %{_bindir}/db_dump185
+%attr(755,root,root) %{_bindir}/db_hotbackup
+%attr(755,root,root) %{_bindir}/db_load
+%attr(755,root,root) %{_bindir}/db_printlog
+%attr(755,root,root) %{_bindir}/db_recover
+%attr(755,root,root) %{_bindir}/db_stat
+%attr(755,root,root) %{_bindir}/db_upgrade
+%attr(755,root,root) %{_bindir}/db_verify
+%endif
 %{_docdir}/db-%{version}-docs/utility
